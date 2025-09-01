@@ -1,0 +1,1 @@
+{"name":"Luogu - P1314","url":"https://www.luogu.com.cn/problem/P1314","memoryLimit":128000,"timeLimit":1000,"tests":[{"id":1744723606489,"input":"5 3 15 \n1 5 \n2 5 \n3 5 \n4 5 \n5 5 \n1 5 \n2 4 \n3 3 ","output":"10\n"}],"group":"luogu","srcPath":"d:\\codes\\Luogu_P_1314.cpp"}

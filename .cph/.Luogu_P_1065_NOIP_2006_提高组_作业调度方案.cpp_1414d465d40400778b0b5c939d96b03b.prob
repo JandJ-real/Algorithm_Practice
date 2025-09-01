@@ -1,0 +1,1 @@
+{"name":"Luogu - P1065 - [NOIP 2006 提高组] 作业调度方案","url":"https://www.luogu.com.cn/problem/P1065","memoryLimit":524288,"timeLimit":1000,"tests":[{"id":1743515353048,"input":"2 3\n1 1 2 3 3 2\n1 2 \n1 2 \n2 1\n3 2 \n2 5 \n2 4\n","output":"10"}],"group":"luogu","srcPath":"d:\\codes\\Luogu_P_1065_NOIP_2006_提高组_作业调度方案.cpp"}

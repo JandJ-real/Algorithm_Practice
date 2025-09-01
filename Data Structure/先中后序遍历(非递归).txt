@@ -1,0 +1,70 @@
+void PreOrderTraversal(BiTree T) {
+  if (!T)
+    return;
+
+  Stack S;
+  InitStack(&S);
+  Push(&S, T); // 根结点入栈
+
+  while (!StackEmpty(&S)) {
+    BiTree current;
+    Pop(&S, &current);                // 弹出栈顶结点
+    printf("%d ", current->data.key); // 访问当前结点
+
+    // 先压右孩子，再压左孩子（保证左孩子先访问）
+    if (current->rchild)
+      Push(&S, current->rchild);
+    if (current->lchild)
+      Push(&S, current->lchild);
+  }
+}
+
+void InOrderTraversal(BiTree T) {
+    if (!T) return;
+
+    Stack S;
+    InitStack(&S);
+    BiTree current = T;
+
+    while (current || !StackEmpty(&S)) {
+        // 一直向左遍历，压栈所有左孩子
+        while (current) {
+            Push(&S, current);
+            current = current->lchild;
+        }
+
+        // 弹出栈顶结点并访问
+        Pop(&S, &current);
+        printf("%d ", current->data.key);
+
+        // 转向右子树
+        current = current->rchild;
+    }
+}
+
+
+//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+//后序最特殊，双栈
+status PostOrderTraverse(BiTree T,void (*visit)(BiTree))
+//后序遍历二叉树T
+{
+    // 请在这里补充代码，完成本关任务
+    /********** Begin *********/
+BiTree stack1[100];
+BiTree stack2[100];
+int top1=-1;int top2=-1;
+stack1[++top1]=T;
+
+
+while(top1>=0){
+BiTree temp=stack1[top1--];
+stack2[++top2]=temp;
+if(temp->lchild) stack1[++top1]=temp->lchild;
+if(temp->rchild) stack1[++top1]=temp->rchild;
+}
+while(top2>=0){
+    visit(stack2[top2--]);
+}
+
+    /********** End **********/
+}

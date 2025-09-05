@@ -1,3 +1,4 @@
+//板子题：P1886
 #include<bits/stdc++.h>
 //分析：初步断定复杂度为2n，通过取两次相反数的方式降到n，其实并非，依然是2n
 #define int long long

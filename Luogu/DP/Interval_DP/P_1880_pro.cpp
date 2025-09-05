@@ -12,16 +12,22 @@
 w2=w[1]+2w[2]+2w[3]（自行推导)
 所以应该将1号和3号中较大的一堆与第2堆合并，也就是把一堆合并得尽可能大，所以就有dp2[i][j]=max(dp2[i+1][j],dp2[i][j-1])+cnt[j]-cnt[i-1];
 */
+
+//2倍数组+四边形不等式优化+前缀和优化
 #include <cstdio>
 #include <iostream>
-
+//会发现。复制数组的方法直接将环结构变成了链式结构，只不过在长度为2n的结构上，遍历上限变成了n
 using namespace std;
 int cnt[210], s[210][210], dp[210][210], n, temp, te, dp2[210][210], maxn, minn;
+//cnt为前缀和
+//s用于四边形不等式的优化(只在可能区间进行枚举)
 int main() {
   scanf("%d", &n);
-  for (int i = 1; i <= n; i++)
-    scanf("%d", &cnt[i]), cnt[i] += cnt[i - 1], s[i][i] = i,
-                                                s[i + n][i + n] = i + n;
+  for (int i = 1; i <= n; i++){
+    scanf("%d", &cnt[i]);
+    cnt[i] += cnt[i - 1], s[i][i] = i, s[i + n][i + n] = i + n;
+  }
+
   for (int i = 1; i <= n; i++)
     cnt[i + n] = cnt[i] + cnt[n];
   for (int i = n * 2; i >= 1; i--)

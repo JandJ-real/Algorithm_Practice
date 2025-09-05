@@ -1,1 +1,0 @@
-{"name":"Luogu - P8218 - 【深进1.例1】求区间和","url":"https://www.luogu.com.cn/problem/P8218","memoryLimit":131072,"timeLimit":1000,"tests":[{"id":1744718770194,"input":"4\n4 3 2 1\n2\n1 4\n2 3","output":"10\n5"}],"group":"luogu","srcPath":"d:\\codes\\Luogu_P_8218_深进_1_例_1_求区间和.cpp"}

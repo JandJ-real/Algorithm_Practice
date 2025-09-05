@@ -6,8 +6,8 @@ set<string> p;
 int num = 0;
 //可以用set存储，二分查找提高匹配速度 或find函数
 int judge(string a) {
-  if(p.find(a)!=p.end()){
-      return 1;
+  if (p.find(a) != p.end()) {
+    return 1;
   }
   return 0;
 }
@@ -33,10 +33,8 @@ signed main() {
       break;
     }
     s += a;
+  }
 
-    
-  } 
-  
   // cout << "s:" << s << endl;
   // s
   int n = s.length();
@@ -47,9 +45,9 @@ signed main() {
   for (int i = 0; i < n; i++) {
     if (dp[i]) {
       for (int j = i + 1; j <= n; j++) {
-        
-        if(j-i>10)
-          break;//P中元素长度不超过10
+
+        if (j - i > 10)
+          break; // P中元素长度不超过10
         string str = s.substr(i, j - i);
         // cout << "str:" << str << endl;
         if (judge(str)) {
@@ -61,7 +59,7 @@ signed main() {
   }
   for (int i = n; i >= 0; i--) {
     if (dp[i]) {
-      cout<<i<<endl;
+      cout << i << endl;
       return 0;
     }
   }

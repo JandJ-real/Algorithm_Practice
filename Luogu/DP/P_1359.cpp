@@ -17,4 +17,5 @@ for(int i=2;i<=n;i++){
         dp[i] = min(dp[i], dp[j] + arr[j][i]);
     }
 }
+cout << dp[n];
 }

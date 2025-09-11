@@ -1,0 +1,36 @@
+SAT_Solver_Project/                    # 项目根目录
+│
+
+│
+├── src/                              # 源代码目录
+│   ├── main.cpp                      # 程序主入口
+│   │
+│   ├── core/                         # 核心数据结构和类型定义
+│   │   ├── Literal.hpp
+│   │   ├── Literal.cpp                    
+│   │   ├── Clause.hpp                
+│   │   ├── Clause.cpp                
+│   │   ├── CNF.hpp               
+│   │   └── CNF.cpp               
+│   │
+│   ├── containers/                   # 自定义容器实现
+│   │   ├── MyVector.hpp              # 自定义向量 模板
+│   │
+│   ├── parser/                       # CNF文件解析模块
+│   │   ├── parser.hpp            
+│   │
+│   ├── solver/                       # DPLL求解器模块
+│   │   ├── DPLLSolver.hpp           
+│   │
+│   ├── sudoku/                       # 数独应用模块
+│   │   ├── CheckSudokuBoard.hpp            
+│   │   ├── GenerateSudoku.cpp           
+│   │   ├── GenerateSudoku.hpp      
+│   │   ├── GenerateXSudoku.cpp       
+│   │   ├── GenerateXSudoku.hpp
+│   │   ├── NormalSudoku.txt  
+│   │   ├── SudokuBase.txt     
+│   │   ├── XSudoku.txt 
+│   │   └── SudokuToCnf.cpp   
+│   │
+│   ├── definition.h                          

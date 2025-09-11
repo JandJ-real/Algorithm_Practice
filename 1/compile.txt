@@ -1,0 +1,18 @@
+cd "C:\Users\RuilinLi\Desktop\2025秋-程序设计综合课程设计任务及指导学生包\程序设计综合课程设计任务及指导学生包\1\src"
+g++ main.cpp core/CNF.cpp core/Clause.cpp core/Literal.cpp -o sat_solver
+
+C:\Users\RuilinLi\Desktop\2025秋-程序设计综合课程设计任务及指导学生包\程序设计综合课程设计任务及指导学生包\1\src\test\基准算例\性能测试\sud00009.cnf
+C:\Users\RuilinLi\Desktop\2025秋-程序设计综合课程设计任务及指导学生包\程序设计综合课程设计任务及指导学生包\1\src\test\基准算例\性能测试\ais10.txt
+
+g++ main.cpp core/CNF.cpp core/Clause.cpp core/Literal.cpp sudoku/GenerateSudoku.cpp sudoku/SudokuToCnf.cpp sudoku/GenerateXSudoku.cpp -o_solver
+
+g++ main.cpp core/CNF.cpp core/Clause.cpp core/Literal.cpp sudoku/GenerateSudoku.cpp sudoku/SudokuToCnf.cpp sudoku/GeneratePercentSudoku.cpp -o_solver
+
+
+C:\Users\RuilinLi\Desktop\2025秋-程序设计综合课程设计任务及指导学生包\程序设计综合课程设计任务及指导学生包\1\src\test\基准算例\功能测试\sat-20.cnf
+
+C:\Users\RuilinLi\Desktop\2025秋-程序设计综合课程设计任务及指导学生包\程序设计综合课程设计任务及指导学生包\1\src\test\基准算例\功能测试\unsat-5cnf-30.cnf
+
+C:\Users\RuilinLi\Desktop\2025秋-程序设计综合课程设计任务及指导学生包\程序设计综合课程设计任务及指导学生包\1\src\test\基准算例\性能测试\sud00009.cnf
+
+C:\Users\RuilinLi\Desktop\2025秋-程序设计综合课程设计任务及指导学生包\程序设计综合课程设计任务及指导学生包\1\src\test\基准算例\性能测试\ais10.cnf

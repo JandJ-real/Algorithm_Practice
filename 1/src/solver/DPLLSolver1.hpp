@@ -5,12 +5,6 @@
 //打印结果
 #include"../parser/parser.hpp"
 extern int numVars;
-extern int Count; 
-
-extern MyVector<double> vsids_score;           // 变量得分表，1 ~ numVars
-extern int vsids_decay_counter;                // 衰减计数器
-extern const int VSIDS_DECAY_EVERY;            // 每隔多少次调用衰减一次
-extern const double VSIDS_DECAY_FACTOR;        // 衰减系数
 //传播
 //根据给定文字进行传播，若传播成功返回true，失败返回false
 /*创建新的cnf，
@@ -56,7 +50,7 @@ bool propagate(CNF& cnf, const Literal& l,int* assignments)
                 newcnf.addClause(newclause);
                 
             }
-            //加到新cnf，然后记录在数组内
+            //压到新cnf，然后记录在数组内
         }
     }
     assignments[abs(l.var)]=(l.var>0)?1:-1;
@@ -68,8 +62,6 @@ bool propagate(CNF& cnf, const Literal& l,int* assignments)
 //选取文字策略:基础策略 选择第一个子句的第一个文字
 Literal selectLiteral_default(CNF& cnf)
 {
-	Count++;
-	std::cout<<"目前递归次数:"<<Count<<endl;
     if(!cnf.Clauses.empty() && !cnf.Clauses[0].literals.empty()) 
     {
     	return cnf.Clauses[0].literals[0];
@@ -80,10 +72,8 @@ Literal selectLiteral_default(CNF& cnf)
 
 
 //选取文字策略：选择出现最多的一个文字 不考虑正负 默认为正 
-Literal selectLiteeral_max(CNF& cnf)
+Literal selectLiteral_max(CNF& cnf)
 {
-	Count++;
-	std::cout<<"目前递归次数:"<<Count<<endl;
 	int* arr=new int[numVars+1]();
 	/*for(size_t i=0;i<cnf.Clauses.size();++i)
 	{
@@ -111,8 +101,7 @@ Literal selectLiteeral_max(CNF& cnf)
  // 选择出现最多的文字 
 Literal selectLiteral_max_new(CNF& cnf)
 {
-	 Count++;
-	 std::cout<<"目前递归次数:"<<Count<<endl;
+	 
 	 int* cnt=new int[numVars * 2 + 1]();
 
          // 计算每个变元的出现次数
@@ -160,20 +149,17 @@ Literal selectLiteral_max_new(CNF& cnf)
 //jw策略 
 Literal selectLiteral_jw(CNF& cnf)
 {
-	Count++;
-	std::cout<<"目前递归次数:"<<Count<<endl;
-    MyVector<double> weight(numVars * 2 + 1, 0.0);
+    MyVector<double> weight(numVars + 1, 0.0);
 
          // 计算每个变元的权重
          for (const Clause& clause : cnf.Clauses) {
              double clauseWeight = pow(2.0, -static_cast<double>(clause.literals.size()));
              for (const Literal& literal : clause.literals) {
-                 int varIndex = std::abs(literal.var);
-                 if (literal.var > 0) {
-                     weight[varIndex] += clauseWeight;
-                 }
-                 else {
-                     weight[numVars - literal.var] += clauseWeight;
+                 if (literal.var != 0) {
+                     int varIndex = abs(literal.var);
+                     if (varIndex <= numVars) {
+                         weight[varIndex] += clauseWeight;
+                     }
                  }
              }
          }
@@ -182,189 +168,111 @@ Literal selectLiteral_jw(CNF& cnf)
          double maxWeight = 0.0;
          int maxBool = 0;
          for (int i = 1; i <= numVars; ++i) {
-             double totalWeight = weight[i] + weight[i + numVars];
-             if (totalWeight > maxWeight) {
-                 maxWeight = totalWeight;
+             if (weight[i] > maxWeight) {
+                 maxWeight = weight[i];
                  maxBool = i;
              }
-         }
-
-         // 确定最终变元是正面还是反面
-         if (weight[maxBool] < weight[maxBool + numVars]) {
-             maxBool = -maxBool;
          }
 
          return Literal(maxBool);
 }
 
-Literal selectLiteral_max(CNF& cnf) {
-    Count++;
-    std::cout << "目前递归次数:" << Count << endl;
 
-    MyVector<double> score(numVars * 2 + 1, 0.0);
 
-    for (const Clause& clause : cnf.Clauses) {
-        for (const Literal& lit : clause.literals) {
-            int idx;
-            if (lit.var > 0) {
-                idx = lit.var;  // 正文字
-            } else {
-                idx = numVars + (-lit.var);  // 负文字，映射到 numVars + |var|
-            }
-            score[idx] += 1.0;
-        }
+bool DPLL_Timeout(CNF& cnf, int way, int* assignments, 
+                  std::chrono::steady_clock::time_point start_time, int time_limit) {
+    // 检查是否超时
+    auto current_time = std::chrono::steady_clock::now();
+    auto elapsed_seconds = std::chrono::duration_cast<std::chrono::seconds>(current_time - start_time).count();
+    if (elapsed_seconds >= time_limit) {
+        std::cout << "超时！执行时间超过 " << time_limit << " 秒" << std::endl;
+        return false; // 超时则退出程序
     }
 
-    int maxIdx = 0;
-    double maxScore = -1.0;
-
-    for (int i = 1; i <= numVars; ++i) {
-        // 先看正
-        if (score[i] > maxScore) {
-            maxScore = score[i];
-            maxIdx = i;
-        }
-        // 再看负
-        int negIdx = numVars + i;
-        if (score[negIdx] > maxScore) {
-            maxScore = score[negIdx];
-            maxIdx = negIdx;
-        }
-    }
-
-    if (maxScore <= 0.0) {
-        std::cout << "未找到高频变量，回退默认策略" << std::endl;
-        return selectLiteral_default(cnf);
-    }
-
-    // 判断是正还是负
-    if (maxIdx <= numVars) {
-        return Literal(maxIdx);  // 正
-    } else {
-        return Literal(-(maxIdx - numVars));  // 负
-    }
-}
-
-Literal selectLiteral_VSIDS_Optimized(CNF& cnf) {
-    Count++;
-    std::cout << "目前递归次数 (VSIDS): " << Count << endl;
-
-    // --- [可选] 执行得分衰减 ---
-    vsids_decay_counter++;
-    if (vsids_decay_counter >= VSIDS_DECAY_EVERY) {
-        for (int i = 1; i <= vsids_score.size() - 1; ++i) {
-            vsids_score[i] *= VSIDS_DECAY_FACTOR;  // 比如 0.5 表示减半
-        }
-        vsids_decay_counter = 0;  // 重置计数器
-        std::cout << "VSIDS: 执行了一次得分衰减" << std::endl;
-    }
-
-    // --- [1] 查找得分最高的变量 ---
-    int maxVar = 0;
-    double maxScore = -1.0;
-
-    for (int i = 1; i <= numVars; ++i) {
-        double score = vsids_score[i];
-        if (score > maxScore) {
-            maxScore = score;
-            maxVar = i;
-        }
-    }
-
-    // --- [2] 如果所有变量都未被统计过（得分为 0），回退到默认策略 ---
-    if (maxScore <= 0.0) {
-        std::cout << "VSIDS: 未找到有得分的变量，回退到默认策略" << std::endl;
-        return selectLiteral_default(cnf);
-    }
-
-    // --- [3] 返回得分最高的变量（正文字，比如 Literal(maxVar) 代表 x_maxVar）
-    std::cout << "VSIDS: 选择变量 " << maxVar << " (得分=" << maxScore << ")" << std::endl;
-    return Literal(maxVar);  // 默认选正，比如 x；你也可以加入正负决策逻辑
-}
-
-
-
-bool DPLL(CNF& cnf,int way,int* assignments)
-{
-    CNF tempcnf=cnf;//拷贝副本
+    CNF tempcnf = cnf; // 拷贝副本
     
-    while(tempcnf.containsUnitClause())//当一直存在单子句时
+    while (tempcnf.containsUnitClause()) // 当一直存在单子句时
     {
-        //先获取单子句and其中的文字
-        Clause unit=tempcnf.getUnitClause_default();
-        Literal selectedLiteral=unit.literals[0];
-        //找到单子句且传播成功,继续
-        //若传播失败，则返回false
-        if(!propagate(tempcnf,selectedLiteral,assignments))
+        // 先获取单子句and其中的文字
+        Clause unit = tempcnf.getUnitClause_default();
+        Literal selectedLiteral = unit.literals[0];
+        // 找到单子句且传播成功,继续；若传播失败，则返回false
+        if (!propagate(tempcnf, selectedLiteral, assignments))
         {
             return false;
         }
 
-        //如果CNF为空，说明所有子句都满足，返回true
-        if(tempcnf.empty()) return true;
+        // 如果CNF为空，说明所有子句都满足，返回true
+        if (tempcnf.empty()) return true;
     }
-    //不存在单子句，自动跳出循环,选择一个文字进行搜索
-    //默认策略
+    // 不存在单子句，自动跳出循环,选择一个文字进行搜索
+    // 默认策略
     Literal selectedL(0); 
-    if(way==1)
+    if (way == 1)
     {
-        selectedL=selectLiteral_default(tempcnf);
+        selectedL = selectLiteral_default(tempcnf);
     }
-    else if(way==2)
-	{
-		selectedL=selectLiteral_max(tempcnf);
-	} 
-	else if(way==3)
-	{
-		selectedL=selectLiteral_max_new(tempcnf);
-	}
-	else if(way==4)
-	{
-		selectedL=selectLiteral_jw(tempcnf);
-	}
-	 
-        if(selectedL.var==0) return false;//没有可选的文字
+    else if (way == 2)
+    {
+        selectedL = selectLiteral_max(tempcnf);
+    } 
+    else if (way == 3)
+    {
+        selectedL = selectLiteral_max_new(tempcnf);
+    }
+    else if (way == 4)
+    {
+        selectedL = selectLiteral_jw(tempcnf);
+    }
+    if (selectedL.var == 0) return false; // 没有可选的文字
 
-        //递归调用DPLL
-        //文字为真
-        CNF truecnf=tempcnf;
+    // 递归调用DPLL_Timeout，传入开始时间和时间限制
+    // 文字为真
+    CNF truecnf = tempcnf;
 
-        //保存原始值，便于回溯
-        int var=abs(selectedL.var);
-        int oldVal=assignments[var];
+    // 保存原始值，便于回溯
+    int var = abs(selectedL.var);
+    int oldVal = assignments[var];
 
 
-        Literal trueL(abs(selectedL.var));
-        //传播
-        if(propagate(truecnf,trueL,assignments))
+    Literal trueL(abs(selectedL.var));
+    // 传播
+    if (propagate(truecnf, trueL, assignments))
+    {
+        if (DPLL_Timeout(truecnf, way, assignments, start_time, time_limit))
         {
-            if(DPLL(truecnf,way,assignments))
-            {
-                return true;
-            }
+            return true;
         }
-        assignments[var]=oldVal;//回溯
+    }
+    assignments[var] = oldVal; // 回溯
 
-        
-        
-        //文字为假
-        CNF falsecnf=tempcnf;
-        //保存原始值
-        oldVal=assignments[var];
-        Literal falseL(-abs(selectedL.var));
-        //传播
-        if(propagate(falsecnf,falseL,assignments))
-        {
-            
-            if(DPLL(falsecnf,way,assignments))
-            {
-                return true;
-            }
-        }
-        assignments[var]=oldVal;//回溯
     
-    //两种都没有
+    
+    // 文字为假
+    CNF falsecnf = tempcnf;
+    // 保存原始值
+    oldVal = assignments[var];
+    Literal falseL(-abs(selectedL.var));
+    // 传播
+    if (propagate(falsecnf, falseL, assignments))
+    {
+        
+        if (DPLL_Timeout(falsecnf, way, assignments, start_time, time_limit))
+        {
+            return true;
+        }
+    }
+    assignments[var] = oldVal; // 回溯
+    
+    // 两种都没有
     return false;
+}
+
+// 原DPLL函数，调用带超时的DPLL_Timeout，设置默认超时时间（这里设为10秒，可根据需求修改）
+bool DPLL(CNF& cnf,int way,int* assignments) {
+    const int TIME_LIMIT = 10; // 超时时间，单位秒
+    auto start_time = std::chrono::steady_clock::now();
+    return DPLL_Timeout(cnf, way, assignments, start_time, TIME_LIMIT);
 }
 
 void print(int* assignments,int numVars)
@@ -417,6 +325,6 @@ void print(int* assignments,int numVars)
  }
      // 写入执行时间
      outFile << "t " << duration << std::endl;
-     cout<<"写入成功！"<<endl;
+
      outFile.close();
  }

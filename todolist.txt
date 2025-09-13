@@ -1,0 +1,22 @@
+并查集：
+https://oi-wiki.org/ds/dsu/ 并查集操作：查询和合并
+P_3367 实现   P_2024 带权   带删除(虚点) 无例题
+应用：基于并查集数据结构，实现最近公共祖先的tarjan算法(与强连通分量算法同名)
+
+双指针：
+https://oi-wiki.org/misc/two-pointer/
+
+离散化：
+https://oi-wiki.org/misc/discrete/
+
+状压dp：
+https://oi-wiki.org/dp/state/
+
+笛卡尔树：
+https://oi-wiki.org/ds/cartesian-tree/
+
+字符串哈希：
+https://oi-wiki.org/string/hash/
+
+线段树(线段树优于树状数组，就不学那个了)
+https://oi-wiki.org/ds/seg/

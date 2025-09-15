@@ -1,0 +1,509 @@
+还差：状压，线段树
+**STL:
+//set:
+  1.变种：unordered_set,multiset
+  2.find进行二分查找
+//map:(好像无用)
+  1.变种：unordered_map(不然默认按键升序排序)
+  2.map<KeyType, ValueType> m  m[Key]=Value
+    m.find(Key),返回迭代器
+//二分：
+  1.lower_bound(a.begin(),a.end(),elem):>=   
+  2.upper_bound(a.begin(),a.end(),elem):>
+
+**前缀和，差分，离散化：
+//前缀和：(区间查询)
+  prefix[0] = 0;
+  for (int i = 1; i <=n;i++){
+        prefix[i] = prefix[i - 1] + numbers[i-1];
+   }
+//差分：(区间修改)
+  vector<int> prefix(n);
+  prefix[0] = score[0];
+  for (int i = 1; i < n;i++){
+        prefix[i] = score[i] - score[i - 1];
+    }
+    for (int i = 0; i < p;i++){x~y
+    cin >> x >> y >> deta;
+    prefix[x - 1] += deta;
+    if(y!=n)prefix[y] -= deta;
+    }
+//离散化：(有待商榷)
+  vector<int> discretize(const vector<int>& nums) {
+    vector<int> sorted = nums;
+    sort(sorted.begin(), sorted.end());
+    sorted.erase(unique(sorted.begin(), sorted.end()), sorted.end());
+    
+    vector<int> result;
+    for (int num : nums) {
+        // 找到num在排序后数组中的位置（从1开始）
+        int pos = lower_bound(sorted.begin(), sorted.end(), num) - sorted.begin() + 1;
+        result.push_back(pos);
+    }
+    return result;
+}
+
+**字符串相关：
+//stl：
+  reverse(str.begin(),str.end());
+
+//字符串哈希：(判断字符串是否相等，回文,模式查找)
+  typedef unsigned long long ull;
+
+struct StringHash {
+    vector<ull> pow1, pre1;
+    vector<ull> pow2, pre2;
+    int n;
+    ull base1 = 131, base2 = 13331;
+    ull mod1 = 1e9+7, mod2 = 1e9+9;
+    void init(const string& s) {
+        n = s.size();
+        pow1.resize(n+1); pre1.resize(n+1);
+        pow2.resize(n+1); pre2.resize(n+1);
+        
+        pow1[0] = pow2[0] = 1;
+        pre1[0] = pre2[0] = 0;
+        for (int i = 1; i <= n; i++) {
+            pow1[i] = pow1[i-1] * base1 % mod1;
+            pow2[i] = pow2[i-1] * base2 % mod2;
+            pre1[i] = (pre1[i-1] * base1 + s[i-1]) % mod1;
+            pre2[i] = (pre2[i-1] * base2 + s[i-1]) % mod2;
+        }
+    }
+    pair<ull, ull> get(int l, int r) {
+        ull h1 = (pre1[r+1] - pre1[l] * pow1[r-l+1] % mod1 + mod1) % mod1;
+        ull h2 = (pre2[r+1] - pre2[l] * pow2[r-l+1] % mod2 + mod2) % mod2;
+        return {h1, h2};
+    }
+};
+    使用示例
+int main() {
+    string s = "hello";string s1=s;
+    StringHash hash,hash1;
+    reverse(s.begin(),s.end());
+    hash1.init(s1);hash.init(s);
+    auto h1 = hash.get(0, 4); 
+    auto h2 = hash1.get(0, 4); 
+if(h1==h2) 回文
+}
+
+**图：
+//弗洛伊德算法(用于有向图顶点对可达性和最短距离，无向图最短距离也可) 
+  1.判断可达性
+  vector<bitset<N>> reach(n+1);//1-based
+  //初始化reach
+  for (int i = 1; i <= n; i++) {
+    reach[i][i] = 1;//自环
+  }
+  for (int i = 1; i <= m; i++) {
+    reach[belong[u[i]]][belong[v[i]]] = 1;//邻边
+  }
+  for(int i=1;i<=n;i++){
+    for(int j=1;j<=n;j++){
+        if(reach[belong[i]][belong[j]]){
+            reach[belong[i]] |= reach[belong[j]];
+        }
+    }
+  }
+  //将可达性转移到dp数组中
+  vector<vector<int>> dp(n + 1, vector<int>(n + 1, 0));
+  for (int i = 1; i <= n; i++) {
+    for (int j = 1; j <= n; j++) {
+        dp[i][j] = reach[i][j];
+    }
+  }
+  2，最短距离
+   vector<bitset<MAXN>> adj(n);
+    
+    for (int i = 0; i < m; i++) {
+        int u, v, w;
+        cin >> u >> v >> w;
+        u--; v--; // 如果输入是1-indexed
+        
+        // 无向图，双向添加
+        if (w < dist[u][v]) {
+            dist[u][v] = w;
+            dist[v][u] = w;
+            adj[u].set(v);
+            adj[v].set(u);
+        }
+    }
+    
+    for (int k = 0; k < n; k++) {
+        for (int i = 0; i < n; i++) {
+            if (dist[i][k] == INF) continue; 
+        
+            for (int j = 0; j < n; j++) {
+                // 使用位集检查k->j是否存在边
+                if (adj[k].test(j)) {
+                    if (dist[i][k] + dist[k][j] < dist[i][j]) {
+                        dist[i][j] = dist[i][k] + dist[k][j];
+                    }
+                }
+            }
+        }
+    }
+//并查集(用于无向图顶点对可达性)
+  //注意：操作都是0-based
+class UnionFind {
+public:
+  vector<int> parent; // 存储每个节点的父节点
+  vector<int> rank;   // 用于按秩合并（可选优化）
+  int count;          // 连通分量数量
+
+  // 初始化并查集
+  UnionFind(int n) : count(n) {
+    parent.resize(n);
+    rank.resize(n, 0);
+    for (int i = 0; i < n; i++) {
+      parent[i] = i; // 初始时每个元素都是自己的父节点
+    }
+  }
+
+  // 查找根节点（路径压缩优化）
+  int find(int x) {
+    if (parent[x] != x) {
+      parent[x] = find(parent[x]); // 路径压缩
+    }
+    return parent[x];
+  }
+
+  // 合并两个集合
+  void unionSet(int x, int y) {
+    int rootX = find(x);
+    int rootY = find(y);
+
+    if (rootX == rootY)
+      return; // 已经在同一集合中
+
+    // 按秩合并（可选优化）
+    if (rank[rootX] < rank[rootY]) {
+      parent[rootX] = rootY;
+    } else if (rank[rootX] > rank[rootY]) {
+      parent[rootY] = rootX;
+    } else {
+      parent[rootY] = rootX;
+      rank[rootX]++;
+    }
+    count--; // 连通分量减少
+  }
+
+  // 判断两个元素是否连通
+  bool connected(int x, int y) { return find(x) == find(y); }
+
+  // 获取连通分量数量
+  int getCount() { return count; }
+};
+//拓扑排序(用于dp)
+    //计算所有点的入度
+  vector<int> ind(n + 1, 0); // 1-based
+  for (int i = 1; i <= n; ++i) {
+    for (size_t j = 0; j < g[i].size(); j++) {
+      ind[g[i][j]]++;
+    }
+  }
+  //压入初始入度为0的点
+  queue<int> q;
+  vector<int> dp(n + 1, 0);
+  for (int i = 1; i <= n; ++i) {
+    if (!ind[i] ) {
+      q.push(i);
+      dp[i] = arr[i];//同时初始化
+    }
+  }
+  //维护队列，入度和dp数组(bfs)
+  while (!q.empty()) {
+    int u = q.front();
+    q.pop();
+      for (size_t i =0; i < g[u].size(); i++) {
+        //u->v
+        int v = g[u][i];
+        ind[v]--;
+        if (ind[v] == 0) {
+          q.push(v);
+        }
+        dp[v] = max(dp[v], dp[u] + arr[v]);
+      }
+  }
+//Tarjan算法(强连通分量)获得belong和a数组
+  const int N = 1e4 + 10, M = 1e5 + 10; //点数和边数
+int a[N], u[M], v[M]; //记录缩点前后的权值，记录原边起点，记录原边终点
+
+int dfn[N], low[N], cnt = 0, stk[N], top = 0, instk[N], belong[N];
+// dfn深搜时节点u被搜索的次序(时间戳)  low能回溯到的最早的栈中节点的次序号
+//  cnt记录访问次序，stk是栈，top栈顶，instk是否在栈里，belong属于哪个强连通分量
+
+int n;       //点
+int m;       //边
+vector<int> arr;
+vector<int> g[N];
+//找强连通分量(belong数组)并计算了缩点值(a数组)
+void tarjan(int u) { 
+  dfn[u] = low[u] = ++cnt, stk[++top] = u, instk[u] = 1;
+  for (auto i : g[u]) {             //遍历邻居
+    if (!dfn[i]) {                  //没有访问过
+      tarjan(i);                    //去递归它
+      low[u] = min(low[u], low[i]); //更新low值 最早
+    } else if (instk[i])            //访问过且在栈中
+      low[u] = min(low[u], dfn[i]); //更新low值
+  }
+  if (dfn[u] == low[u]) { //找到一个SCC
+    do {
+      instk[stk[top]] = 0;  //出栈
+      belong[stk[top]] = u; //这个结点属于u代表的SCC
+      if (stk[top] != u)
+        a[u] += a[stk[top]]; //缩点累加权值   但是权值不用重复加自己
+    } while (stk[top--] != u); //循环直到栈顶是自己  自己也是算在scc里的
+  }
+}
+
+  //进行缩点(main中)
+  for (int i = 1; i <= n; i++) {
+    if (!dfn[i])
+      tarjan(i);
+  }
+//图的dfs
+  void DFSUtil(const Graph &graph, int v, vector<bool> &visited,
+             vector<int> &result) {
+  visited[v] = true;
+  result.push_back(v);
+
+  for (const auto &neighbor : graph.getAdjacencyList()[v]) {
+    int next = neighbor.first;
+    if (!visited[next]) {
+      DFSUtil(graph, next, visited, result);
+    }
+  }
+}
+
+// DFS - 深度优先搜索
+vector<int> DFS(const Graph &graph, int start) {
+  int V = graph.getVertices();
+  vector<bool> visited(V, false);
+  vector<int> result;
+  DFSUtil(graph, start, visited, result);
+  return result;
+}
+void printPath(const vector<int> &path) {
+  for (size_t i = 0; i < path.size(); ++i) {
+      // cout<<path[i];
+      cout << path[i] + 1; // 1-based
+      if (i < path.size() - 1)
+          cout << ' ';
+  }
+  cout << endl;
+}
+//图的bfs 
+  vector<int> BFS(const Graph &graph, int start) {
+  int V = graph.getVertices();
+  vector<bool> visited(V, false);
+  vector<int> result;
+  queue<int> q;
+
+  visited[start] = true;
+  q.push(start);
+
+  while (!q.empty()) {
+    int current = q.front();
+    q.pop();
+    result.push_back(current);
+
+    for (const auto &neighbor : graph.getAdjacencyList()[current]) {
+      int next = neighbor.first;
+      if (!visited[next]) {
+        visited[next] = true;
+        q.push(next);
+      }
+    }
+  }
+
+  return result;
+}
+**树：
+//最近公共祖先(使用并查集)
+  const int MAXN = 500010;
+vector<int> G[MAXN];
+vector<pair<int, int>> Q[MAXN];
+int parent[MAXN], ancestor[MAXN];
+bool vis[MAXN];
+int ans[MAXN];
+int find(int x) { return parent[x] == x ? x : parent[x] = find(parent[x]); }
+
+void tarjan(int u) {
+  vis[u] = true;
+  ancestor[u] = u;
+  for (int v : G[u]) {
+    if (!vis[v]) {
+      tarjan(v);
+      parent[v] = u;
+      ancestor[find(u)] = u;
+    }
+  }
+  for (auto &[v, id] : Q[u]) {
+    if (vis[v]) {
+      ans[id] = ancestor[find(v)];
+    }
+  }
+}
+int main() {
+  int n, m,s;
+  cin >> n >> m>>s;
+  // 建树
+  for (int i = 1; i < n; i++) {
+    int u, v;
+    cin >> u >> v;
+    G[u].push_back(v);
+    G[v].push_back(u);
+  }
+  // 添加查询
+  for (int i = 0; i < m; i++) {
+    int u, v;
+    cin >> u >> v;
+    Q[u].emplace_back(v, i);
+    Q[v].emplace_back(u, i);
+  }
+  // 初始化并查集
+  for (int i = 1; i <= n; i++)
+    parent[i] = i;
+
+  tarjan(s); //s是根节点
+  // 输出结果
+  for (int i = 0; i < m; i++) {
+    cout << ans[i] << endl;
+  }}
+//树的重心(到该点的距离之和最短(可带权))
+  vector<int> g[MAXN]; // 无权图
+// 如果是有权图，使用：vector<pair<int, int>> g[MAXN]; 存储 (邻居, 权值)
+int w[MAXN], n, siz[MAXN];
+long long ans = INF, f[MAXN];
+//获取f[1] siz[]数据
+void dfs(int u, int fa, int dep) {
+  siz[u] = w[u];
+  for (int v : g[u]) { // 遍历u的所有邻居v
+    if (v != fa) {     // 避免回到父节点(只因是无向图)
+      dfs(v, u, dep + 1);
+      siz[u] += siz[v];
+    }
+  }
+  f[1] += w[u] * dep;
+}
+void dp(int u, int fa) {
+  //遍历邻居
+  for (int v : g[u]) {
+    if (v != fa) {
+        //根节点转移
+      f[v] = f[u] + siz[1] - siz[v] * 2;
+      dp(v, u);
+    }
+  }
+  ans = min(ans, f[u]);
+}
+int a, b;
+int main() {
+  n = read();
+  rep(i, 1, n) {
+    w[i] = read();
+    a = read();
+    b = read();
+    if (a) {
+      g[i].push_back(a); g[a].push_back(i);}
+    
+    if (b) {
+      g[i].push_back(b);g[b].push_back(i);}
+  }//以上为输入
+  dfs(1, 0, 0);
+  dp(1, 0); printf("%lld\n", ans);
+//树的dfs
+  见树的重心
+
+
+**dp
+//背包
+1.0-1背包，多重背包，完全背包
+      if (!m[i])
+      { // 完全背包
+          for (int j = w[i]; j <= t; j++){
+              dp[j] = max(dp[j - w[i]] + v[i], dp[j]);
+          }
+      }
+      else{ //多重背包(m[i]=1时是0-1背包)
+        for (int q = 1; q <= m[i];q++){
+          for (int j = t; j >= w[i]; j--) {
+            dp[j] = max(dp[j - w[i]] + v[i], dp[j]);
+          }
+        }
+      }
+2.分组背包
+for (int i = 1;i<=totalz;i++){//枚举每一组
+    for (int j = m; j >= 0;j--){//枚举容量
+        for (int t = 1; t <= z[i];t++){//枚举该组中每一个物品
+            int num = q[i][t];
+            if (j - w[num] >= 0)
+            {
+              dp[j] = max(dp[j - w[num]] + v[num], dp[j]);
+            }
+        }
+    }
+}
+分析：每一个容量把该组中的所有物品都筛选了一遍(容量循环放在物品前面)并且保证只选取其中的一个(倒序枚举)
+3.有依赖的背包
+for (int i = 1; i <= cur;i++){
+    //枚举每一组
+    int num = t[i][1];
+    int sum_1 = w[num];
+    int xsum_1 = v[num] * w[num];
+    for (int j = n; j >= sum_1; j--)
+    {
+        // 枚举容量
+        dp[j] = max(dp[j - sum_1] + xsum_1, dp[j]);
+        //列举附件的所有组合 2~z[i]
+        vector<int> dpsum(4, sum_1);//初始化时都先选主件 0-based
+        vector<int> dpxsum(4, xsum_1); //初始化时都先选主件 0-based
+        int s = 0;//当前遍历过的方案数
+        for (int q = 2; q <= z[i]; q++) {
+          //枚举该组中的每一个物品
+          int temp = s;//暂存，便于遍历
+          for (int e = 0; e <= temp; e++) {
+            //加到之前的每一个方案中
+            s++;
+            dpsum[s]=dpsum[e]+w[t[i][q]];
+            dpxsum[s] = dpxsum[e] + w[t[i][q]] * v[t[i][q]];
+            if(j>=dpsum[s]){
+                dp[j] = max(dp[j - dpsum[s]] + dpxsum[s], dp[j]);
+            }
+        }
+}
+    }
+}
+//区间
+vector<vector<int>> dp(n + 1, vector<int>(n + 1));//表示该区间最大贡献
+for(int i=1;i<=n;i++){
+    dp[i][i] = arr[i] * n;
+}
+//迭代到1~n最大贡献即为所得
+for (int i = 2;i<=n;i++){
+    //遍历区间长
+    for(int j=1;j<=n;j++){
+        //遍历左起点
+        int l=j;
+        int r=j+i-1;
+        if(r>n){
+            break;//确保不越界
+        }
+        //取相邻最大值，只因由内向外是连续的天数
+        dp[l][r] = max(dp[l + 1][r] + arr[l] * (n - i + 1), dp[l][r-1] + arr[r] * (n - i + 1));
+    }
+}
+//状压
+
+//三最问题
+1.最大连续子序列：遍历每个元素做选择就行了
+2.最长单调子序列：以最长不上升为例：对每个元素，在已有序列中找到第一个小于该元素的位置，替换该位置，若没有这样的元素(也即全部大于等于该元素)，直接尾接。就这样维护这个dp序列
+3.最长公共子序列：用二维dp数组(两个维度分别遍历两个序列)，转移方程：dp[i][j]=dp[i-1][j-1]+1(i元素和j元素相等)；dp[i][j]=max(dp[i-1][j],dp[i][j-1])(i元素和j元素不相等)
+
+**数据结构
+//ST表(感觉不如线段树)
+//线段树
+
+
+    

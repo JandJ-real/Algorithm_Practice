@@ -2,7 +2,7 @@ dfs bfs模板(记忆化搜索板子)(用于暴力)
 
 字符串相关函数(子串,next数组,匹配,,)()，大小写处理，与其他类型的转换，多行输入，字符串哈希
 
-stl库函数的使用：set，map，priority_queue(寻找前k大元素)(dijstra和prim),unique(返回指向新尾部的迭代器)，unordered_set
+stl库函数的使用：set，{map}，priority_queue(寻找前k大元素)(dijstra和prim),unique(返回指向新尾部的迭代器)，unordered_set，multiset(支持重复元素)
 
 
 c++数据结构：邻接表,线段树,树状数组
@@ -21,3 +21,5 @@ c++数据结构：邻接表,线段树,树状数组
 筛法 isprime函数
 
 经典DP板子？
+
+二分：

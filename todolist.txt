@@ -3,6 +3,9 @@ https://oi-wiki.org/ds/dsu/ 并查集操作：查询和合并
 P_3367 实现   P_2024 带权   带删除(虚点) 无例题
 应用：基于并查集数据结构，实现最近公共祖先的tarjan算法(与强连通分量算法同名)
 
+//带权，带删除的拓展？
+//tarjan算法看不懂
+
 双指针：
 https://oi-wiki.org/misc/two-pointer/
 

@@ -50,21 +50,16 @@ for (int i = 1; i <= cur;i++){
     for (int j = n; j >= sum_1; j--)
     {
         // 枚举容量
-     
-            
-   
-                dp[j] = max(dp[j - sum_1] + xsum_1, dp[j]);
-            
-     
+        dp[j] = max(dp[j - sum_1] + xsum_1, dp[j]);
         //列举附件的所有组合 2~z[i]
-        vector<int> dpsum(4, sum_1);
-        vector<int> dpxsum(4, xsum_1);
-        int s = 0;
+        vector<int> dpsum(4, sum_1);//初始化时都先选主件 0-based
+        vector<int> dpxsum(4, xsum_1); //初始化时都先选主件 0-based
+        int s = 0;//当前遍历过的方案数
 
         for (int q = 2; q <= z[i]; q++) {
           //枚举该组中的每一个物品
-          int temp = s;
-          for (int e = 1; e <= temp; e++) {
+          int temp = s;//暂存，便于遍历
+          for (int e = 0; e <= temp; e++) {
             //加到之前的每一个方案中
             s++;
             dpsum[s]=dpsum[e]+w[t[i][q]];
@@ -73,17 +68,9 @@ for (int i = 1; i <= cur;i++){
                 dp[j] = max(dp[j - dpsum[s]] + dpxsum[s], dp[j]);
             }
         }
-        //自己成一个方案
-        s++;
-        dpsum[s] += w[t[i][q]] ;
-        dpxsum[s] += v[t[i][q]] * w[t[i][q]]  ;
-        if (j >= dpsum[s]) {
-          dp[j] = max(dp[j - dpsum[s]] + dpxsum[s], dp[j]);
-        }
-    
-
 }
-
+    }
+}
 //通过位运算列举组合的办法
 
 /*// 收集所有附件的重量和价值
@@ -123,7 +110,8 @@ for (int j = n; j >= main_weight; j--) {
     }
 }*/
 
-cout << dp[n];
 
-}
+
+
+cout << dp[n];
 }

@@ -1,4 +1,27 @@
 还差：状压，线段树
+**模板
+#include<bits/stdc++.h>
+using namespace std;
+#define int long long
+inline int read() {
+  int x = 0, f = 1;    // x: 存储结果, f: 符号标志(1正数, -1负数)
+  char ch = getchar(); // 读取第一个字符
+  while (!isdigit(ch)) { // 跳过非数字字符
+    if (ch == '-')
+      f = -1;       // 遇到负号，设置符号为负
+    ch = getchar(); // 继续读取下一个字符
+  }
+  while (isdigit(ch)) {    // 处理数字部分
+    x = x * 10 + ch - '0'; // 将字符转换为数字并累加
+    ch = getchar();        // 读取下一个字符
+  }
+  return x * f; // 返回结果（考虑符号）
+}
+signed main(){
+  return 0;
+}
+
+
 **STL:
 //set:
   1.变种：unordered_set,multiset
@@ -10,6 +33,11 @@
 //二分：
   1.lower_bound(a.begin(),a.end(),elem):>=   
   2.upper_bound(a.begin(),a.end(),elem):>
+//list:o(1)的插入和删除
+  1.push_back push_front
+  2.pop_front pop_back
+  3.erase(迭代器) insert(迭代器，元素)
+
 
 **前缀和，差分，离散化：
 //前缀和：(区间查询)

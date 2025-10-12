@@ -1,4 +1,8 @@
 #include <bits/stdc++.h>
+//两个维度的dp，不同情况的状态转移
+//想不到的点在哪
+//管你在哪
+//做个总方案数量的专题：点菜，纸币
 using namespace std;
 
 inline int read() {
@@ -26,9 +30,29 @@ vector<int> arr;
 vector<vector<int>> dp;//表示前i个菜花光j元钱的方案有几种
 signed main() {
     cin >> n >> m;
-    arr.resize(n);
-    for (int i = 0; i < n;i++){
+    arr.resize(n+1);
+    dp.resize(n+1);
+    for (int i = 1; i <= n;i++){
         arr[i] = read();
+        dp[i].resize(m + 1,0);
+        dp[i][0] = 1;
     }
-for
+    dp[0].resize(m + 1, 0);
+    dp[0][0] = 1;
+
+    //先枚举菜，再枚举钱，保证每个菜只发挥了一次作用
+    for (int i = 1; i <= n;i++){
+        for (int j = 1; j <= m;j++){
+            //三种不同情况的状态转移
+            if(j-arr[i]==0)
+                dp[i][j] = dp[i - 1][j]+1;
+            else if(j-arr[i]>0){
+                dp[i][j] = dp[i - 1][j - arr[i]]+dp[i-1][j];
+            }
+            else{
+                dp[i][j] = dp[i - 1][j];
+            }
+        }
+    }
+    cout << dp[n][m];
 }

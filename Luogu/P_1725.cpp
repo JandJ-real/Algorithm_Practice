@@ -1,5 +1,6 @@
 #include <bits/stdc++.h>
-
+//sliding window
+//对sliding window 的运用太死板了 
 using namespace std;
 //1.有些不可到达的位置记为INT_MIN
 #define int long long
@@ -24,56 +25,40 @@ int n;//0~n
 int l, r;//下一步范围
 vector<int> arr;
 vector<int> dp;//在i格子的最大值
+vector<int> visited;
 int ans = INT_MIN;
 signed main() {
     cin >> n;
     cin >> l >> r;
     arr.resize(n + 1);
+    visited.resize(n + 1,0);
     dp.resize(n + 1,INT_MIN);
     for (int i = 0; i <= n;i++){
         arr[i] = read();
     }
     dp[0] = 0;
-//sliding window维护r-l长度的最小值？
+//sliding window维护r-l长度的最大值
+//维护单调递减的队列
+//问题：维护的长度不是当前格子想要的长度
     deque<int> de;
-    int dist = r - l+1;
-    de.push_back(0);
     
     for (int i = l; i <= n;i++){
-        if(i<=l+r){
-    for (int j = l; j <= r;j++){
-            int last = i - j;
-            if(last<0){
-                break;
-            }
-            if(dp[last]==INT_MIN)
-                continue;
-            dp[i] = max(dp[i], dp[last] + arr[i]);
-        }
-        //count++;
-        while(!de.empty()&&dp[de.back()]<dp[i]){
+        int last=i-l;//最新的能到达i的元素(有效元素)
+        //维护队列的完整性和单调性
+        while(!de.empty()&&dp[de.back()]<dp[last]){
             de.pop_back();
         }
-        de.push_back(i);
-        while(!de.empty()&&de.back()-de.front()>=dist){
+        //if(dp[last]!=INT_MIN)
+        de.push_back(last);
+        //维护队列对当前元素的可达性
+        while(de.front()+r<i){
             de.pop_front();
         }
-        }
-        else{
-            dp[i] = max(dp[i], dp[de.front()] + arr[i]);
-             while(!de.empty()&&dp[de.back()]<dp[i]){
-            de.pop_back();
-        }
-        de.push_back(i);
-        while(!de.empty()&&de.back()-de.front()>=dist){
-            de.pop_front();
-        }
-        }
-        }
-    
-    
-    for (int i = r; i >= 1;i--){
-        ans = max(ans, dp[n + 1 - i]);
+        dp[i] = dp[de.front()] + arr[i];
     }
+
+        for (int i = r; i >= 1; i--) {
+            ans = max(ans, dp[n + 1 - i]);
+        }
         cout << ans;
 }

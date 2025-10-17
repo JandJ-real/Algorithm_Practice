@@ -71,8 +71,9 @@ signed main()
         while (!de.empty() && de.back() - de.front() >= x) {
             de.pop_front();
         }
-        dp[i] = dp[de.front()] - de.front() * d + k + arr[i] + (i - 1) * d;
-        while (!de.empty() && dp[de.back()] - de.front() * d > dp[i] - i * d) {
+        int num = de.front();
+        dp[i] = dp[num] - num * d + k + arr[i] + (i - 1) * d;
+        while (!de.empty() && dp[de.back()] - de.back() * d > dp[i] - i * d) {
             de.pop_back();
         }
         de.push_back(i);

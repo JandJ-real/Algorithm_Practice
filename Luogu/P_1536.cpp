@@ -16,35 +16,35 @@ inline int read() {
     }
     return x * f;
 }
-int n, m, p;
-int Fa[5005];
+int n, m;
+int Fa[1005];
+void start() {
+    for (int i = 1; i <= n; i++) {
+        Fa[i] = i;
+    }
+    return;
+}
 int zx(int x) {
     if (Fa[x] == x) {
         return x;
     }
-
     return zx(Fa[x]);
 }
 void hb(int a, int b) {
     Fa[zx(a)] = zx(b);
+    return;
 }
 signed main() {
-    cin >> n >> m >> p;
-    for (int i = 1; i <= n; i++) {
-        Fa[i] = i;
-    }
-    int a, b;
-    while (m--) {
-        a = read(), b = read();
-        hb(a, b);
-    }
-    while (p--) {
-        a = read(), b = read();
-        if (zx(a) == zx(b)) {
-            cout << "Yes" << endl;
-        } else {
-            cout << "No" << endl;
+    while (cin >> n, n) {
+        cin >> m;
+        start();
+        int a, b;
+        while (m--) {
+            cin >> a >> b;
+            if (zx(a) != zx(b))
+                n--;
+            hb(a, b);
         }
+        cout<<n-1<<endl;
     }
-    return 0;
 }

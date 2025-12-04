@@ -2,7 +2,7 @@
 
 using namespace std;
 #define int long long
-const int LOG = 20;
+
 inline int read() {
     int x = 0, f = 1;     // x: 存储结果, f: 符号标志(1正数, -1负数)
     char ch = getchar();  // 读取第一个字符
@@ -20,12 +20,22 @@ inline int read() {
 
     return x * f;  // 返回结果（考虑符号）
 }
-int n, m, q;
-/*
-1.查询x所在树的直径
-2.连接x，y所在树，使得新树的直径最小
-*/
+int t;
+int n;
+int temp;
+map<int, int> mp;
 signed main() {
-    cin >> n >> m >> q;
-
+    t=read();
+    while (t--) {
+        n = read();
+        while (n--) {
+            temp = read();
+            if (!mp[temp]) {
+                cout << temp << ' ';
+                mp[temp] = 1;
+            }
+        }
+        cout<<endl;
+        mp.clear();
+    }
 }

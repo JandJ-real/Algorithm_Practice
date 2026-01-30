@@ -1,5 +1,7 @@
 #include <iostream>
 #include <cstring>
+#include<bits/stdc++.h>
+
 using namespace std;
 class phone{
        char number[12];

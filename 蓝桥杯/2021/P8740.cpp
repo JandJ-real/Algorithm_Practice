@@ -2,19 +2,8 @@
 using namespace std;
 #define int long long
 int gb(int a, int b) { return a * b / gcd(a, b); }
-vector<int> arr(2050, INT_MAX);
-void dfs(int cur) {
-    if (cur == 2021) {
-        return;
-    }
-    for (int i = 1; i <= 21; i++) {
-        if (cur + i <= 2021) {
-            arr[cur + i] = min(arr[i] + gb(cur + i, cur), arr[cur + i]);
-        }
-        dfs(cur + i);
-    }
-    return;
-}
+
+
 signed main() {
 
     /*
@@ -88,7 +77,34 @@ signed main() {
 
     //最小公倍数？
     // a * b/ gcd(a.b)
+    vector<int> arr(2050, INT_MAX);
+    vector<bool> visited(2050, false);
     arr[1] = 0;
-    dfs(1);
-    cout << arr[2021];
+    // dfs(1);
+    for(int j=1;j<=2021;j++){
+        int mindist = INT_MAX;
+        int u = -1;
+        //找所有未访问的节点中arr[i]最小的
+        //更新i所有邻居节点的距离
+        for (int i = 1; i <= 2021; i++) {
+            if (arr[i] < mindist && (!visited[i])) {
+                u = i;
+                mindist=arr[i];
+            }
+        }
+        if(u==2021){
+            break;
+        }
+        visited[u] = 1;
+        for (int deta = -21; deta <= 21; deta++) {
+            if (deta == 0) {
+                continue;
+            }
+            int next = u + deta;
+            if (next >= 1 && next <= 2021) {
+                arr[next] = min(arr[next], arr[u] + gb(u, next));
+            }
+        }
+    }
+    cout << arr[2021];   // 10266837   缔结特拉斯单源最短路
 }

@@ -166,5 +166,6 @@
     "cSpell.enabled": false,
     "latex-workshop.intellisense.atSuggestion.user": {
         "@seq": "如\\autoref{eq:}所示"
-    }
+    },
+    "python-envs.defaultEnvManager": "ms-python.python:system"
 }
